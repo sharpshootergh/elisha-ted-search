@@ -1,0 +1,32 @@
+version: '3.9'
+services:
+  ted-search-logic:
+    container_name: ted-search-logic
+    image: 644435390668.dkr.ecr.us-west-2.amazonaws.com/ofori-search-ted-search:2.1  # Only on the New Instance
+    # build:
+      # context: .
+      # dockerfile: Dockerfile
+    # restart: on-failure
+    volumes:
+      - static_files:/var/static_files
+    networks:
+      - app-proxy
+  
+  proxy:
+    image: nginx:1.23.3
+    ports:
+      - "80:80"
+    volumes:
+      - static_files:/usr/share/nginx/static
+      # - ./conf/nginx.conf:/etc/nginx/conf.d  # Local
+      - ./conf/default.conf:/etc/nginx/conf.d/default.conf
+    # restart: always
+    depends_on:
+      - ted-search-logic
+    networks:
+      - app-proxy
+networks:
+  app-proxy:
+
+volumes:
+  static_files:
